@@ -1,0 +1,30 @@
+schema:
+  - ${SCHEMA_PATH}
+documents: src/**/*.gql
+extensions:
+  # Конфигурация для graphql-code-generator https://graphql-code-generator.com/docs/getting-started/index
+  codegen:
+    generates:
+      src/:
+        preset: near-operation-file # https://graphql-code-generator.com/docs/presets/near-operation-file
+        presetConfig:
+          extension: .generated.ts
+          baseTypesPath: __generated__/index.ts
+        plugins:
+          - typescript-operations
+          - typescript-react-apollo
+        config:
+          nonOptionalTypename: true
+          dedupeOperationSuffix: true
+          omitOperationSuffix: true
+          withComponent: false
+          withHooks: true
+          withHOC: false
+          reactApolloVersion: 3
+          avoidOptionals: true
+
+      src/__generated__/index.ts:
+        - typescript
+      ./schema.json:
+        plugins:
+          - introspection
