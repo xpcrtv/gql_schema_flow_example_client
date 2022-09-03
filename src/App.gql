@@ -1,11 +1,3 @@
-query GetUsers {
-  users {
-    ...UserFragment
-  }
-}
-
-fragment UserFragment on User {
-  id
-  name
-  age
+query GetHello {
+  hello
 }
