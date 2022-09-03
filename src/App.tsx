@@ -1,20 +1,10 @@
 import "./App.css";
-import { useGetUsers } from "./App.generated";
+import { useGetHello } from "./App.generated";
 
 function App() {
-  const { data } = useGetUsers();
+  const { data } = useGetHello();
 
-  return (
-    <div className="App">
-      <div className="list">
-        {data?.users.map(({ id, name, age }) => (
-          <li key={id}>
-            {name} / {age}
-          </li>
-        ))}
-      </div>
-    </div>
-  );
+  return <div className="App">{data?.hello}</div>;
 }
 
 export default App;
