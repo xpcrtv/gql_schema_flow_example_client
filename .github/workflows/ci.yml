@@ -20,8 +20,8 @@ jobs:
       - name: Set environment by branch if not staging or master
         if: ${{ github.ref != 'refs/heads/staging' && github.ref != 'refs/heads/master' }}
         run: |
-          echo "BRANCH='staging'" >> $GITHUB_ENV
-          echo "URL_BRANCH="STAGING" >> $GITHUB_ENV
+          echo "branch=staging" >> $GITHUB_ENV
+          echo "url_branch=STAGING" >> $GITHUB_ENV
 
       - name: Set environment by branch 
         if: ${{ github.ref == 'refs/heads/staging' || github.ref  == 'refs/heads/master' }}
