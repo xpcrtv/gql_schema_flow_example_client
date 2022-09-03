@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: ["master", "staging"]
+  pull_request:
+    branches: ["master", "staging"]
+
+env:
+  NODE_VERSION: 14.20.0
+  TZ: "Asia/Yekaterinburg"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set environment by branch if not staging or master
+        if: ${{ github.ref != 'refs/heads/staging' && github.ref != 'refs/heads/master' }}
+        run: |
+          echo "BRANCH='staging'" >> $GITHUB_ENV
+          echo "URL_BRANCH="STAGING" >> $GITHUB_ENV
+
+      - name: Set environment by branch 
+        if: ${{ github.ref == 'refs/heads/staging' || github.ref  == 'refs/heads/master' }}
+        run: |
+          echo "branch=$GITHUB_REF_NAME" >> $GITHUB_ENV
+          echo "url_branch="$(echo $GITHUB_REF_NAME | tr '[:lower:]' '[:upper:]')"" >> $GITHUB_ENV
+
+      - name: Show envs
+        run: |
+          echo "Branch env: ${{ env.branch }}"
+          echo "Url Branch env: ${{ env.url_branch }}"
+          echo "Api url env variable name: ${{ format('API_URL_{0}', env.url_branch) }}"
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Cache dependencies
+        id: npmcache
+        uses: actions/cache@v2
+        with:
+          path: node_modules/
+          key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.npmcache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Generate TS types, and React hooks from downloaded GQL schema
+        env:
+          VITE_API_URL: ${{ secrets[format('API_URL_{0}', env.url_branch)] }}
+          BRANCH: ${{ env.branch }}
+        run: |
+          cat ./schema.graphql
+          npm run codegen
+
+      - name: Build app
+        run: npm run build
+
+
+
