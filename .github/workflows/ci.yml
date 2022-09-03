@@ -56,8 +56,8 @@ jobs:
           VITE_API_URL: ${{ secrets[format('API_URL_{0}', env.url_branch)] }}
           BRANCH: ${{ env.branch }}
         run: |
-          cat ./schema.graphql
           npm run codegen
+          cat ./schema.graphql
 
       - name: Build app
         run: npm run build
